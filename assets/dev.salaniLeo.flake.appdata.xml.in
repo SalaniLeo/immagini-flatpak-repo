@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-	<id>dev.salaniLeo.flake.desktop</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0-or-later</project_license>
-	<description>
-	  <p>No description</p>
-	</description>
+  <id>dev.salaniLeo.flake</id>
+  <name>Flake</name>
+  <summary>GTK user interface for AppImageKit</summary>
+  <developer_name>salaniLeo</developer_name>
+  <launchable type="desktop-id">Flake</launchable>
+  <description/>
+  <content_rating type="oars-1.1"/>
 </component>
