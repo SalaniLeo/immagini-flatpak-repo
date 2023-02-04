@@ -1,5 +1,5 @@
 {
-    "app-id" : "dev.salaniLeo.flake",
+    "app-id" : "io.github.salaniLeo.flake",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "43",
     "sdk" : "org.gnome.Sdk",
@@ -24,7 +24,7 @@
                     "type" : "git",
                     "url" : "https://github.com/SalaniLeo/Flake-flatpak-repo.git",
                     "tag" : "0.0.3",
-                    "commit" : "aa0c996569dc2a018e4adaa94d642dc77f3a5b3b"
+                    "commit" : "76e6c7449b3427d4e088bc137277705db50da50f"
                 }
             ]
         }
