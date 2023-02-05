@@ -29,7 +29,7 @@
     <release version="0.0.3" date="2023-02-05">
       <description>
         <p>
-          Initial release of the example app
+          UI ported to gtk4
         </p>
       </description>
     </release>
