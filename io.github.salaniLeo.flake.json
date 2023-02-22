@@ -16,6 +16,7 @@
         "/share/gtk-doc"
     ],
     "modules" : [
+	"assets/python-dependencies.json",
         {
             "name" : "flake",
             "buildsystem" : "meson",
@@ -23,9 +24,13 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/SalaniLeo/Flake-flatpak-repo.git",
-                    "tag" : "0.0.3",
+                    "tag" : "0.0.4",
                     "commit" : "a4498200cd83985404c186207af7d8a7f9a7adba"
                 }
+            ],
+            "dependencies": [
+                "python3",
+                "python3-Pillow"
             ]
         }
     ]

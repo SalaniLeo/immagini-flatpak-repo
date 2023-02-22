@@ -1,5 +1,5 @@
 project('flake',
-          version: '0.0.3',
+          version: '0.0.4',
     meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2', 'werror=false', ],
 )
@@ -32,7 +32,8 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
-install_subdir('data', install_dir: '/app/bin')
+install_subdir('Flake', install_dir: '/app/bin')
+subdir('share/icons')
 
 gnome.post_install(
      glib_compile_schemas: true,

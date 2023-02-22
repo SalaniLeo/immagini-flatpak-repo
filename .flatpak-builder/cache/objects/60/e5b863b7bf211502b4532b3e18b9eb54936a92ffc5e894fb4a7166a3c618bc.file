@@ -1,0 +1,5 @@
+[Runtime]
+name=io.github.salaniLeo.flake.Debug
+
+[ExtensionOf]
+ref=app/io.github.salaniLeo.flake/x86_64/master

@@ -25,7 +25,7 @@ if appstream_util.found()
   test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
 endif
 
-install_data('io.github.salaniLeo.flake.gschema.xml',
+install_data('io.github.salanileo.flake.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
@@ -35,8 +35,6 @@ if compile_schemas.found()
        compile_schemas,
        args: ['--strict', '--dry-run', meson.current_source_dir()])
 endif
-
-subdir('icons')
 
 gnome.compile_resources('flake',
   'flake.gresource.xml',
