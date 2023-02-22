@@ -164,7 +164,7 @@
                     "type" : "git",
                     "url" : "https://github.com/SalaniLeo/Flake-flatpak-repo.git",
                     "tag" : "0.0.4",
-                    "commit" : "8a2ddc987f0365ff34729c65aeaadc3a8980dd7a"
+                    "commit" : "551573d160320216bead4dc8b740cf896aaa2a50"
                 }
             ],
             "dependencies": [
