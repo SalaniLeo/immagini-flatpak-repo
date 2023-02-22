@@ -26,11 +26,12 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="0.0.4" date="2023-02-30">
+    <release version="0.0.4" date="2023-02-22">
       <description>
         <p>
-          Added library page
-          Added credits, preferences and about window
+          Added library page<br>
+          Added credits, preferences and about window<br>
+          For full list of changelog see the github repo
         </p>
       </description>
     </release>
