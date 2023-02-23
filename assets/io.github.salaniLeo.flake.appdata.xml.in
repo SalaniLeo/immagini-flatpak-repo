@@ -2,11 +2,11 @@
 <component type="desktop">
   <id>io.github.salaniLeo.flake</id>
   <name>Flake</name>
-  <summary>Gtk interface for AppImageKit. </summary>
+  <summary>Library and creation tool for .AppImage files </summary>
   <description>
     <p>
 
-    Made to let users build appimages with ease. Say goodbye to the classic old terminal.
+    Made to manage and create AppImages. Works best with appimagelauncher
 
     </p>
   </description>
