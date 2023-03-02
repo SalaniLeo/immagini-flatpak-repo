@@ -1,10 +1,10 @@
 import gi
 import time
 import os
-from .library.getContent import *
+from ..library.getContent import *
 from threading import Thread
 from .newImage import *
-
+from .uiElements import *
 
 gi.require_version(namespace='Gtk', version='4.0')
 gi.require_version(namespace='Adw', version='1')
@@ -18,7 +18,8 @@ flatpak = False
 contentWindow = Adw.PreferencesPage.new()
 # contentWindow = Gtk.Box.new(orientation=Gtk.Orientation.VERTICAL, spacing=12)
 dir = str(pathlib.Path.home()) + "/.local/share/Flake"
-widgets = []
+images = []
+dirs = []
 changedPath = False
 toast_overlay = Adw.ToastOverlay.new()
 page = None
@@ -37,7 +38,7 @@ class mainWindow(Gtk.ApplicationWindow):
 
         page = self
 
-        self.createImageBox = newImageBox()
+        self.createImageBox = newImageBox(self)
         self.createImageBox.okButton.connect('clicked', newImageBox.initCreation, Flake.refresh, page)
         newImageBox.getFlatpak(flatpak)
 
@@ -87,8 +88,6 @@ class mainWindow(Gtk.ApplicationWindow):
         menu_button_model.append('Preferences', 'app.preferences')
         menu_button_model.append('About', 'app.about')
 
-
-
         menuButton = Gtk.MenuButton.new()
         menuButton.set_icon_name(icon_name='open-menu-symbolic')
         menuButton.set_menu_model(menu_model=menu_button_model)
@@ -121,17 +120,18 @@ class mainWindow(Gtk.ApplicationWindow):
         imagesNum = appsInfo.appimages
         time.sleep(0.1)
 
-        # print(appslist)
         for n in range(imagesNum):
-            element = getImages.createElements(appsInfo.names[n], Flake.refresh, page, Flake.setRowState)
-            widgets.append(element)
-            contentWindow.add(widgets[n])
+            imageRow = getImages.createImageRow(appsInfo.imageNames[n], Flake.refresh, page, setRowState, flatpak)
+
+            images.append(imageRow)
+
+            contentWindow.add(images[n])
 
 imagesNum = None
 
 class Flake(Adw.Application):
 
-    def __init__(self,AppId, isFlatpak):
+    def __init__(self, AppId, isFlatpak):
         super().__init__(application_id=AppId,
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
@@ -142,8 +142,6 @@ class Flake(Adw.Application):
 
         global flatpak
         flatpak = isFlatpak
-
-        # self.create_action('quit', self.do_shutdown, ['<primary>q'])
 
     def do_activate(self):
         global page
@@ -172,13 +170,13 @@ class Flake(Adw.Application):
 
     def show_about(self, action, param):
         dialog = Adw.AboutWindow()
-        dialog.set_application_name=("Flake")
+        dialog.set_application_name('Flake')
         dialog.set_version("0.0.4")
-        dialog.set_developer_name("Leonardo Salani")
+        # dialog.set_developer_name("Leonardo Salani")
         dialog.set_license_type(Gtk.License(Gtk.License.GPL_3_0))
         dialog.set_comments("GTK user insterface for appimagekit")
         dialog.set_website("https://github.com/SalaniLeo/Flake")
-        dialog.set_developers(["salaniLeo"])
+        dialog.set_developers(["Leonardo Salani"])
         dialog.set_application_icon("io.github.salaniLeo.flake")
         dialog.present()
         
@@ -189,8 +187,8 @@ class Flake(Adw.Application):
 
     def refresh(self, action, param):
         for n in range(imagesNum):
-            contentWindow.remove(widgets[0])
-            widgets.remove(widgets[0])
+            contentWindow.remove(images[0])
+            images.remove(images[0])
         getImages.restart_count()
         t1 = Thread(target=mainWindow.images)
         t1.start()
@@ -219,14 +217,6 @@ class Flake(Adw.Application):
         toast.set_action_name(action)
 
         return toast
-
-    def setRowState(widget, mode):
-
-        if mode == 'default':
-            widget.get_style_context().remove_class(class_name='error')
-
-        widget.get_style_context().add_class(class_name=mode)
-        # widget.set_subtitle(subtitle='AppImage file not executable')
 
 class FlakePreferences(Adw.PreferencesWindow):
 
@@ -295,18 +285,17 @@ class FlakePreferences(Adw.PreferencesWindow):
         prefercePage.add(group=imageCreatorOptions)
         prefercePage.add(group=newImageOptions)
 
-
-        self.libraryPathEntry = Gtk.Entry.new()
-        self.libraryPathEntry.set_valign(align=Gtk.Align.CENTER)
-
-        self.libraryPathEntry.set_text(libraryPath)
-
+        self.libraryPathEntry = pathEntry(libraryPath)
         self.libraryPathEntry.connect('changed', self.saveString, "librarypath")
+
+        self.browseLibLoc = browseButton(fileChooser, 'select library location', True, self.libraryPathEntry, page)
 
         libraryPathRow = Adw.ActionRow.new()
         libraryPathRow.set_title(title='Library location')
         libraryPathRow.set_subtitle("To apply changes restart the app")
         libraryPathRow.add_suffix(widget=self.libraryPathEntry)
+        libraryPathRow.add_suffix(widget=self.browseLibLoc)
+
 
         libraryOptions.add(child=libraryPathRow)
 
@@ -342,10 +331,8 @@ class FlakePreferences(Adw.PreferencesWindow):
         if os.path.exists(entry.get_text()):
                 changedPath = True
                 settings.set_string(key, entry.get_text())
-                Flake.setRowState(self.libraryPathEntry, 'default')
         else:
                 settings.set_string(key, str(pathlib.Path.home()) + "/Applications")
-                Flake.setRowState(self.libraryPathEntry, 'error')
 
     def do_shutdown(self, quit):
         global changedPath

@@ -6,7 +6,8 @@ from .creator.AppRun import *
 from .creator.copyExeFile import *
 from .creator.copyIconFile import *
 from .creator.builder.builder import *
-from .creator.error import *
+from .creator.copyLibraries import *
+from .ui.error import *
 
 # name = None
 # exe = None
@@ -14,7 +15,7 @@ from .creator.error import *
 # type = None
 # categories = None
 
-def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode,folderLoc, flatpak, self, mainWindow):
+def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode, folderLoc, includeLibraries, librariesPath, flatpak, self, mainWindow):
 
     # prints options for terminal output
     # print("[name] " + name)
@@ -23,18 +24,24 @@ def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode
     # print("[type] " + type)
     # print("[category] " + categories)
     # print("[output location] " + output)
-    
+
     exeName = ntpath.basename(exe)
     iconName = ntpath.basename(icon)
     appDirPath = output + "/" + name + ".AppDir/"
     pFolderName =  os.path.basename(folderLoc)
-    exePathFolderMode = compare(pFolderName,exe, self)
+    exePathFolderMode = compare(pFolderName, exe, self, mainWindow, folderMode)
     shareFolder = output + "/" + name + ".AppDir/usr/share"
+    libFolder = output + "/" + name + ".AppDir/usr/lib"
+
 
     os.makedirs(shareFolder)
+    
+    if(includeLibraries):
+        os.makedirs(libFolder)
+        copyLibraries(librariesPath, appDirPath, self, mainWindow)
 
     # creates initial .AppDir folder
-    createAppDir(appDirPath,folderMode, self)
+    createAppDir(appDirPath,folderMode, self, mainWindow)
     
     # creates desktop file inside .AppDir folder
     createDesktopFile(name,exeName,iconName,type,categories,appDirPath)
@@ -53,7 +60,7 @@ def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode
             throwError(self,"Rename the file to 'AppRun'", "AppRun file not valid", mainWindow)
             return 0
         # copies apprun if everything is ok
-        copyAppRunFile(appRunLoc,appDirPath,self)
+        copyAppRunFile(appRunLoc,appDirPath,self, mainWindow)
             
     # checks if foldermode is enabled
     if not(folderMode):
@@ -61,7 +68,7 @@ def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode
         copyExe(exe,appDirPath,exeName, self, mainWindow)
     elif(folderMode):
         # if foldermode is enabled moves the entire app inside .AppDir
-        copyExePFolder(appDirPath,pFolderName,folderLoc,exe, self)
+        copyExePFolder(appDirPath,pFolderName,folderLoc,exe, self, mainWindow)
 
 
     # sets outputtxt to the appimagetool output
@@ -71,12 +78,12 @@ def start(name,exe,icon,type,categories,output,customAppRun,appRunLoc,folderMode
 
 
         
-def compare(folderName, s2, self):
-    if folderName:
+def compare(folderName, s2, self, mainWindow, folderMode):
+    if folderMode:
         try:
             result = s2.split(folderName,1)[1]
             return result
         except IndexError:
-            throwError(self, "The selected application parent folder does not contain selected executable file", "Parent folder does not contain executable")
+            throwError(self, "The selected application parent folder does not contain selected executable file", "Parent folder does not contain executable", mainWindow)
     else:
         return None

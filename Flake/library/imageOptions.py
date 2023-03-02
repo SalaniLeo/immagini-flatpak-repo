@@ -4,7 +4,9 @@ import os
 import stat
 import threading
 import pathlib
-from ..creator import error
+from ..ui.console import console
+from ..ui.error import throwError
+from ..ui.uiElements import *
 gi.require_version(namespace='Gtk', version='4.0')
 gi.require_version(namespace='Adw', version='1')
 
@@ -19,12 +21,12 @@ class manageImages(list):
         menu.append(menu_item)
         menu_item.show()
 
-    def executeImage(imagePath, executable):
+    # def executeImage(imagePath, executable):
         
-        if not executable:
-                error.throwError(None, "The app has no executable permissions", "Permission denied")
-        else:
-                subprocess.run(imagePath)
+    #     if not executable:
+    #             error.throwError(None, "The app has no executable permissions", "Permission denied")
+    #     else:
+    #             subprocess.run(imagePath)
 
     def deleteImage(button, imagePath, refresh, name, mainWindow, setRowState, row):
         manageImages.askSure(name, imagePath, refresh, mainWindow)
@@ -72,24 +74,60 @@ class manageImages(list):
             os.chmod(appImage, current & ~stat.S_IEXEC)
             setRowState(row, 'error')
 
-    def extractImage(button, imagePath, entry):
-        command = "cd " + entry.get_text() + " && " + imagePath + " /app/bin/Flake/creator/builder/tool/AppRun --appimage-extract"
+    def extractImage(button, imagePath, entry, mainWindow, name):
+        command = "cd " + entry.get_placeholder_text() + " && " + imagePath + " --appimage-extract"
 
-        os.popen(command)
+        dst = entry.get_placeholder_text() + '/' + name.get_text() + '.AppDir'
+
+        if os.path.exists(dst):
+            throwError(None, 'Folder ' + dst + ' alredy exists', 'Folder already exists', mainWindow)
+        else:
+            terminal = Gtk.TextView()
+            terminal.set_editable(False)
+
+            bff = Gtk.TextBuffer()
+            terminal = Gtk.TextView(buffer = bff)
+            bff.set_text("Extracting image")
+
+            iter = bff.get_end_iter()
+
+            consolePage = console(mainWindow, terminal)
+            consolePage.present()
+
+            extractOutput = os.popen(command).read()
+            bff.insert(iter, extractOutput)
+
+            os.rename(entry.get_placeholder_text() + '/squashfs-root', dst)
 
 
     def renameImage(button, appImage, name, loc, refresh, imageName=None, imageNum=None):
-        dst = loc + "/" + name.get_text() + ".AppImage"
+        dst = loc + "/" + name.get_placeholder_text() + ".AppImage"
 
         os.rename(appImage, dst)
 
         refresh(None, None, None)
 
+    def startImage(button, appImage, executable, mainWindow, flatpak, setState, row):
+        if not executable:
+            throwError(None, "The app has no executable permissions", "Permission denied", mainWindow)
+        else:
+            global imagePath
+            global command
+            imagePath = appImage
+            if flatpak:
+                command = 'flatpak-spawn --host ' + imagePath
+            else:
+                command = imagePath
+            t1 = threading.Thread(target=runImage)
+            t1.start()
+
 imageNum = None
 imageNames = None
+command = None
 
 def runImage():
-    subprocess.run(imagePath)
+    os.system(command)
+
 
 class imageOptions(Adw.PreferencesWindow):
 
@@ -138,29 +176,28 @@ class imageOptions(Adw.PreferencesWindow):
         imageOptions.add(child=setExecutable)
 
 
-        extractEntry = Gtk.Entry()
+        extractEntry = pathEntry(os.path.dirname(os.path.abspath(appImage)))
         extractEntry.set_hexpand(True)
-        extractEntry.set_text(os.path.dirname(os.path.abspath(appImage)))
         extractEntry.set_valign(Gtk.Align.CENTER)
 
         extractButton = Gtk.Button.new()
         extractButton.set_icon_name(icon_name='emblem-ok-symbolic')
         extractButton.set_valign(Gtk.Align.CENTER)
-        extractButton.connect('clicked', manageImages.extractImage, appImage, extractEntry)
+        extractButton.connect('clicked', manageImages.extractImage, appImage, extractEntry, parent, nameEntry)
 
         extractImage = Adw.ActionRow.new()
         extractImage.set_title(title='Extract image:')
         extractImage.add_suffix(extractEntry)
         extractImage.add_suffix(extractButton)
 
-        # desktopShortcutSw = Gtk.Switch.new()
-        # desktopShortcutSw.set_active(False)
-        # desktopShortcutSw.set_valign(align=Gtk.Align.CENTER)
-        # desktopShortcutSw.connect('notify::active', manageImages.createShortcut, 'desktop', str(pathlib.Path.home())+'/Desktop', appImage)
+        # startInTerminalSw = Gtk.Switch.new()
+        # startInTerminalSw.set_active(False)
+        # startInTerminalSw.set_valign(align=Gtk.Align.CENTER)
+        # # startInTerminalSw.connect('notify::active', manageImages.createShortcut, 'desktop', str(pathlib.Path.home())+'/Desktop', appImage)
 
-        # setDesktopShortcut = Adw.ActionRow.new()
-        # setDesktopShortcut.set_title(title='Desktop shortcut:')
-        # setDesktopShortcut.add_suffix(widget=desktopShortcutSw)
+        # startInTerminal = Adw.ActionRow.new()
+        # startInTerminal.set_title(title='Start in terminal:')
+        # startInTerminal.add_suffix(widget=startInTerminalSw)
 
 
         # launcherShortcutSw = Gtk.Switch.new()
@@ -172,7 +209,7 @@ class imageOptions(Adw.PreferencesWindow):
         # setLauncherShortcut.set_title(title='Launcher shortcut:')
         # setLauncherShortcut.add_suffix(widget=launcherShortcutSw)
 
-        # imageOptions.add(child=setDesktopShortcut)
+        # imageOptions.add(child=startInTerminal)
         # imageOptions.add(child=setLauncherShortcut)
         imageOptions.add(child=extractImage)
 

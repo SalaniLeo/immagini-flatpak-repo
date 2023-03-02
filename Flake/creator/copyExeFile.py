@@ -1,7 +1,7 @@
 import shutil
 import os
 from os import path
-from .error import throwError
+from ..ui.error import throwError
 import shutil
 
 # default copyExe option
@@ -20,16 +20,18 @@ def copyExe(exe,appDirPath,exeName, self, mainWindow):
         # sys.exit("could not copy the exe file")
         
 def copyExePFolder(appDirPath,pFolderName,parentFolder,exe, self, mainWindow):
-    
-    # gets parent folder name from complete directory
-    parentFolder = parentFolder
 
-    appDirPath = appDirPath + "usr"
+    appDirPath = appDirPath + 'usr/' + pFolderName
+
+    print(appDirPath)
+    print(parentFolder)
+    print(exe)
+
     if path.exists(parentFolder):
         shutil.copytree(parentFolder, appDirPath)
         os.chmod(exe , 777)
     else:
-        throwError(self, "could not copy the exe file", "exe file does't exist")
+        throwError(self, "could not copy the exe file", "exe file does't exist", mainWindow)
 
 
 
