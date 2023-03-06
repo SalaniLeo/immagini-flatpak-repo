@@ -42,10 +42,10 @@
       <description>
         <p>
           <li>Added 'Include libraries' option when creating AppImage</li>
-          <li>Added button to execute AppImage
+          <li>Added button to execute AppImage</li>
           <li>Added browse button to all entries that require path</li>
           <li>All entries that require path now tell you if inserted path is correct</li>
-          For full changelog go on releases in github
+          <p>For full changelog go on releases in github</p>
         </p>
       </description>
     </release>
