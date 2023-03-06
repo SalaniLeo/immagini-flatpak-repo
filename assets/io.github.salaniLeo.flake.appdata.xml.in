@@ -41,7 +41,11 @@
       <release version="0.1.0" date="2023-03-10">
       <description>
         <p>
-          ///desc
+          <li>Added 'Include libraries' option when creating AppImage</li>
+          <li>Added button to execute AppImage
+          <li>Added browse button to all entries that require path</li>
+          <li>All entries that require path now tell you if inserted path is correct</li>
+          For full changelog go on releases in github
         </p>
       </description>
     </release>
