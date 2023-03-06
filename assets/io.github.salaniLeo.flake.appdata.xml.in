@@ -37,18 +37,18 @@
       <caption>Last page where you specify all the necessary paths</caption>
     </screenshot>
   </screenshots>
-  <releases>
+    <releases>
       <release version="0.1.0" date="2023-03-06">
-      <description>
-        <p>
-          <li>Added 'Include libraries' option when creating AppImage</li>
-          <li>Added button to execute AppImage</li>
-          <li>Added browse button to all entries that require path</li>
-          <li>All entries that require path now tell you if inserted path is correct</li>
-          <p>For full changelog go on releases in github</p>
-        </p>
-      </description>
-    </release>
+        <description>
+          <p>
+            <li>Added 'Include libraries' option when creating AppImage</li>
+            <li>Added button to execute AppImage</li>
+            <li>Added browse button to all entries that require path</li>
+            <li>All entries that require path now tell you if inserted path is correct</li>
+            For full changelog go on releases in github
+          </p>
+        </description>
+      </release>
     <release version="0.0.4" date="2023-02-30">
       <description>
         <p>
