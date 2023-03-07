@@ -47,7 +47,7 @@
         </p>
       </description>
     </release>
-    <release version="0.0.4" date="2023-02-30">
+    <release version="0.0.4" date="2023-02-22">
       <description>
         <p>
           Added library page
@@ -65,3 +65,4 @@
     </release>
   </releases>
 </component>
+
