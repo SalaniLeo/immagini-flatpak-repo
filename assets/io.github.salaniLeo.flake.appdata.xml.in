@@ -2,11 +2,11 @@
 <component type="desktop">
   <id>io.github.salaniLeo.flake</id>
   <name>Flake</name>
-  <summary>.Library and creation tool for AppImage files</summary>
+  <summary>Library and creation tool for AppImage apps </summary>
   <description>
     <p>
 
-    Made to manage and create .AppImage applications with a gtk4 user interface
+    Flake is an app that provides a gtk4 gui to manage your AppImage apps. Also includes a way to create an AppImage.
 
     </p>
   </description>
@@ -65,4 +65,3 @@
     </release>
   </releases>
 </component>
-
