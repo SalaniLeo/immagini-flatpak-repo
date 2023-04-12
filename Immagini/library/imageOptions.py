@@ -12,21 +12,12 @@ gi.require_version(namespace='Adw', version='1')
 
 from gi.repository import Gtk, Gdk, Adw
 
-imagePath = ""
-
 class manageImages(list):
     def __init__(self, list, loc): 
         menu = Gtk.Menu()
         menu_item = Gtk.MenuItem("A menu item")
         menu.append(menu_item)
         menu_item.show()
-
-    # def executeImage(imagePath, executable):
-        
-    #     if not executable:
-    #             error.throwError(None, "The app has no executable permissions", "Permission denied")
-    #     else:
-    #             subprocess.run(imagePath)
 
     def deleteImage(button, imagePath, refresh, name, mainWindow, setRowState, row):
         manageImages.askSure(name, imagePath, refresh, mainWindow)
@@ -107,17 +98,20 @@ class manageImages(list):
 
         refresh(None, None, None)
 
-    def startImage(button, appImage, executable, mainWindow, flatpak, setState, row):
+    def startImage(button, appImage, none, mainWindow, flatpak, setState, row):
+        
+        st = os.stat(appImage)
+        executable = bool(st.st_mode & stat.S_IEXEC)
+        
         if not executable:
             throwError(None, "The app has no executable permissions", "Permission denied", mainWindow)
         else:
-            global imagePath
             global command
-            imagePath = appImage
+
             if flatpak:
-                command = 'flatpak-spawn --host ' + imagePath
+                command = 'cd ~ && ' + 'flatpak-spawn --host ' + appImage.split("/home/",1)[1].split("/",1)[1]
             else:
-                command = imagePath
+                command = appImage
             t1 = threading.Thread(target=runImage)
             t1.start()
 
@@ -126,6 +120,7 @@ imageNames = None
 command = None
 
 def runImage():
+    print(command)
     os.system(command)
 
 
